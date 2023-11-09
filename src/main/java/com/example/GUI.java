@@ -1,23 +1,33 @@
 package com.example;
 
+import java.io.File;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.text.DefaultCaret;
 
 public class GUI {
 
-    JTextArea console;
+    private JTextArea console;
     public JButton downloadButton;
+    public JButton saveButton;
+    public String path = System.getProperty("user.home") + "\\AppData\\Roaming\\.minecraft\\mods";
+    JLabel pathLabel;
+
+    JFileChooser fileChooser;
 
 
     public GUI() {
-        JFrame frame = new JFrame("mod-manager");
-        frame.setSize(500, 300);
+        JFrame frame = new JFrame("Mod Manager");
+        frame.setSize(600, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
 
@@ -34,7 +44,17 @@ public class GUI {
 
         this.downloadButton = new JButton("Baixar");
 
+        this.saveButton = new JButton("Alterar");
+
+        pathLabel = new JLabel("Caminho da pasta de mods:  " + path);
+
+        fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(path));
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
         panel.add(scroll);
+        panel.add(pathLabel);
+        panel.add(saveButton);
         panel.add(downloadButton);
 
         frame.add(panel);
@@ -43,5 +63,14 @@ public class GUI {
 
     public void println(String text) {
         console.append(text + "\n");
+    }
+
+    public void pathChooser() {
+        
+        if (fileChooser.showOpenDialog(console) == JFileChooser.APPROVE_OPTION) {
+            this.path = fileChooser.getSelectedFile().getAbsolutePath();
+            this.pathLabel.setText("Caminho da pasta de mods: " + path);
+        };
+        
     }
 }

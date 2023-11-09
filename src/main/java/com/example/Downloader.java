@@ -20,13 +20,15 @@ public class Downloader extends SwingWorker<Integer, String> {
     
     private GUI gui;
     private JSONObject mods;
+    private String path;
 
     private JSONArray modrinthMods;
     private JSONObject curseforgeMods;
 
-    public Downloader(GUI gui) throws IOException {
+    public Downloader(GUI gui, String path) throws IOException {
 
         this.gui = gui;
+        this.path = path;
 
         // manifesto
         gui.println("Baixando manifesto...");
@@ -42,8 +44,8 @@ public class Downloader extends SwingWorker<Integer, String> {
         modList.delete();
     }
 
-    public Downloader(GUI gui, int sleep) throws IOException {
-        this(gui);
+    public Downloader(GUI gui, String path, int sleep) throws IOException {
+        this(gui, path);
         this.sleep = sleep;
     }
     
@@ -60,7 +62,7 @@ public class Downloader extends SwingWorker<Integer, String> {
                  Thread.sleep(sleep);   
                 }
                 else {
-                    File modfile = new File(name);
+                    File modfile = new File(path + "\\" + name);
                     if (modfile.isFile()) {
                         gui.println(name + " já existe");
                     }
@@ -80,7 +82,7 @@ public class Downloader extends SwingWorker<Integer, String> {
                  Thread.sleep(sleep);   
                 }
                 else {
-                    File modfile = new File(name);
+                    File modfile = new File(path + "\\" + name);
                     if (modfile.isFile()) {
                         gui.println(name + " já existe");
                     }
