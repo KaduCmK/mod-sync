@@ -5,13 +5,18 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Downloader {
+public class Downloader extends SwingWorker<Integer, String> {
+
+    private int sleep = 0;
     
     private GUI gui;
     private JSONObject mods;
@@ -36,21 +41,32 @@ public class Downloader {
 
         modList.delete();
     }
+
+    public Downloader(GUI gui, int sleep) throws IOException {
+        this(gui);
+        this.sleep = sleep;
+    }
     
-    public void download() {
+    @Override
+    protected Integer doInBackground() {
         
         try {
             // baixando do modrinth
             for (Object mod: modrinthMods) {
                 String url = (String) mod;
                 String name = FilenameUtils.getName(url);
-                gui.println("Modrinth: Baixando " + name + "...");
-                File modfile = new File(name);
-                if (modfile.isFile()) {
-                    gui.println(name + " já existe");
+                publish("Modrinth: Baixando " + name + "...");
+                if (sleep != 0) {
+                 Thread.sleep(sleep);   
                 }
                 else {
-                    FileUtils.copyURLToFile(new URL(url), modfile);
+                    File modfile = new File(name);
+                    if (modfile.isFile()) {
+                        gui.println(name + " já existe");
+                    }
+                    else {
+                        FileUtils.copyURLToFile(new URL(url), modfile);
+                    }
                 }
             }
 
@@ -59,18 +75,39 @@ public class Downloader {
             while(cfModNames.hasNext()) {
                 String name = cfModNames.next();
                 String url = curseforgeMods.getString(name);
-                gui.println("CurseForge: baixando " + name + "...");
-                File modfile = new File(name);
-                if (modfile.isFile()) {
-                    gui.println(name + " já existe");
+                publish("CurseForge: baixando " + name + "...");
+                if (sleep != 0) {
+                 Thread.sleep(sleep);   
                 }
                 else {
-                    FileUtils.copyURLToFile(new URL(url), modfile);
+                    File modfile = new File(name);
+                    if (modfile.isFile()) {
+                        gui.println(name + " já existe");
+                    }
+                    else {
+                        FileUtils.copyURLToFile(new URL(url), modfile);
+                    }
                 }
             }
         }
         catch (Exception e) {
             gui.println(e.toString());
         }
+
+        return 42;
     }
+
+    @Override
+    protected void process(List<String> chunks) {
+        for (String chunk: chunks) {
+            gui.println(chunk);
+        }
+    }
+
+    @Override
+    protected void done() {
+        gui.println("Download completo.");
+    }
+
+    
 }

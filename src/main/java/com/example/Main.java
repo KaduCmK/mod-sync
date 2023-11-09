@@ -7,13 +7,13 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         GUI gui = new GUI();
-        Downloader downloader = new Downloader(gui);
+        Downloader downloader = new Downloader(gui, 200);
 
         gui.downloadButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                downloader.download();
+                downloader.execute();
             }
             
         });
