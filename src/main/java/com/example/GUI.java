@@ -7,10 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.DefaultCaret;
 
 public class GUI {
 
-    private JTextArea console;
+    JTextArea console;
     public JButton downloadButton;
 
 
@@ -28,6 +29,8 @@ public class GUI {
         this.console = new JTextArea();
         console.setEditable(false);
         JScrollPane scroll = new JScrollPane(console);
+        DefaultCaret caret = (DefaultCaret)console.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
         this.downloadButton = new JButton("Baixar");
 

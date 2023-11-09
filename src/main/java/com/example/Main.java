@@ -13,7 +13,7 @@ public class Main {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                downloader.download();
+                downloader.execute();
             }
             
         });
