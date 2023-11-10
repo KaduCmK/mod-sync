@@ -11,10 +11,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.text.DefaultCaret;
 
 public class GUI {
+
+    JFrame frame;
 
     private JTextArea console;
     public JButton downloadButton;
@@ -26,7 +27,7 @@ public class GUI {
 
 
     public GUI() {
-        JFrame frame = new JFrame("Mod Manager");
+        frame = new JFrame("Mod Manager");
         frame.setSize(600, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -58,6 +59,7 @@ public class GUI {
         panel.add(downloadButton);
 
         frame.add(panel);
+
         frame.setVisible(true);
     }
 
