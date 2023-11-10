@@ -6,24 +6,30 @@ import java.awt.event.ActionListener;
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        GUI gui = new GUI();
-        Downloader downloader = new Downloader(gui, gui.path);
+        if (args[0].equals("nogui")) {
+            Downloader downloader = new Downloader();
+            downloader.noguiDownload();
+        }
+        else {
+            GUI gui = new GUI();
+            Downloader downloader = new Downloader(gui, gui.path);
 
-        gui.downloadButton.addActionListener(new ActionListener() {
+            gui.downloadButton.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                downloader.execute();
-            }
-            
-        });
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    downloader.execute();
+                }
+                
+            });
 
-        gui.saveButton.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gui.pathChooser();
-            }
-        });
+            gui.saveButton.addActionListener(new ActionListener() {
+                
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    gui.pathChooser();
+                }
+            });
+        }
     }
 }
