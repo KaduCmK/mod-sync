@@ -20,6 +20,7 @@ public class GUI {
     private JTextArea console;
     public JButton downloadButton;
     public JButton saveButton;
+    public JButton manifestButton;
     public String path = System.getProperty("user.home") + "\\AppData\\Roaming\\.minecraft\\mods";
     JLabel pathLabel;
 
@@ -43,9 +44,12 @@ public class GUI {
         DefaultCaret caret = (DefaultCaret)console.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-        this.downloadButton = new JButton("Baixar");
+        this.downloadButton = new JButton("Baixar Mods");
+        downloadButton.setEnabled(false);
 
-        this.saveButton = new JButton("Alterar");
+        this.saveButton = new JButton("Alterar pasta de mods");
+
+        this.manifestButton = new JButton("Baixar Manifesto");
 
         pathLabel = new JLabel("Caminho da pasta de mods:  " + path);
 
@@ -57,6 +61,7 @@ public class GUI {
         panel.add(pathLabel);
         panel.add(saveButton);
         panel.add(downloadButton);
+        panel.add(manifestButton);
 
         frame.add(panel);
 

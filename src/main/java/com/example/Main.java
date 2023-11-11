@@ -31,6 +31,15 @@ public class Main {
                     gui.pathChooser();
                 }
             });
+
+            gui.manifestButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    downloader.manualManifestDownload();
+                }
+                
+            });
         }
     }
 }

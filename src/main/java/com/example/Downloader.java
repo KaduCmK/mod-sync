@@ -1,13 +1,17 @@
 package com.example;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.net.ssl.SSLHandshakeException;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
@@ -26,40 +30,86 @@ public class Downloader extends SwingWorker<Integer, String> {
     private JSONArray modrinthMods;
     private JSONObject curseforgeMods;
 
-    public Downloader() throws IOException {
-        System.out.println("Baixando manifesto...");
-        File modList = new File("mods.json");
-        FileUtils.copyURLToFile(new URL("https://pastebin.com/raw/hkf4UbdT"), modList);
-        mods = new JSONObject(FileUtils.readFileToString(modList, StandardCharsets.UTF_8));
+    public Downloader() throws Exception {
+        try {
+            System.out.println("Baixando manifesto...");
+            File modList = new File("mods.json");
+            FileUtils.copyURLToFile(new URL("https://pastebin.com/raw/hkf4UbdT"), modList);
+            mods = new JSONObject(FileUtils.readFileToString(modList, StandardCharsets.UTF_8));
 
-        modrinthMods = mods.getJSONArray("modrinth");
-        curseforgeMods = mods.getJSONObject("curseforge");
-        int modsQtd = modrinthMods.length() + curseforgeMods.length();
-        System.out.println("Manifesto atualizado. " + modsQtd + " mods no total.");
+            modrinthMods = mods.getJSONArray("modrinth");
+            curseforgeMods = mods.getJSONObject("curseforge");
+            int modsQtd = modrinthMods.length() + curseforgeMods.length();
+            System.out.println(modsQtd + " mods no total, pronto para baixar.");
 
-        modList.delete();
+            modList.delete();
+        }
+        catch (SSLHandshakeException ex) {
+            File modList = new File("manifest.json");
+            if (!modList.isFile()) {
+                System.out.println("Erro ao baixar o manifesto.\nPressione qualquer tecla para abrir pelo seu navegador e clique em Download\ne rode o programa novamente");
+                System.out.println("ATENÇÃO: O manifesto precisa estar no mesmo local que este programa!");
+                Scanner sc = new Scanner(System.in);
+                sc.nextLine();
+                this.manualManifestDownload();
+                sc.close();
+            }
+            else {
+                System.out.println(path);
+                mods = new JSONObject(FileUtils.readFileToString(modList, StandardCharsets.UTF_8));
+
+                modrinthMods = mods.getJSONArray("modrinth");
+                curseforgeMods = mods.getJSONObject("curseforge");
+                int modsQtd = modrinthMods.length() + curseforgeMods.length();
+                System.out.println(modsQtd + " mods no total, pronto para baixar.");
+
+                modList.delete();
+            }
+        }
     }
     
-    public Downloader(GUI gui, String path) throws IOException {
+    public Downloader(GUI gui, String path) throws IOException, URISyntaxException, InterruptedException {
 
         this.gui = gui;
         this.path = path;
 
-        // manifesto
-        gui.println("Baixando manifesto...");
-        File modList = new File("mods.json");
-        FileUtils.copyURLToFile(new URL("https://pastebin.com/raw/hkf4UbdT"), modList);
-        mods = new JSONObject(FileUtils.readFileToString(modList, StandardCharsets.UTF_8));
+        try {
+            // manifesto
+            gui.println("Baixando manifesto...");
+            File modList = new File("manifest.json");
+            FileUtils.copyURLToFile(new URL("https://pastebin.com/raw/hkf4UbdT"), modList);
+            mods = new JSONObject(FileUtils.readFileToString(modList, StandardCharsets.UTF_8));
 
-        modrinthMods = mods.getJSONArray("modrinth");
-        curseforgeMods = mods.getJSONObject("curseforge");
-        int modsQtd = modrinthMods.length() + curseforgeMods.length();
-        gui.println("Manifesto atualizado. " + modsQtd + " mods no total.");
+            modrinthMods = mods.getJSONArray("modrinth");
+            curseforgeMods = mods.getJSONObject("curseforge");
+            int modsQtd = modrinthMods.length() + curseforgeMods.length();
+            gui.println(modsQtd + " mods no total, pronto para baixar.");
 
-        modList.delete();
+            gui.downloadButton.setEnabled(true);
+            modList.delete();
+        }
+        catch (SSLHandshakeException ex) {
+            File modList = new File("manifest.json");
+            if (!modList.isFile()) {
+                gui.println("Erro ao baixar o manifesto.\nUse o botão abaixo para acessar manualmente e clique em Download, e rode o programa novamente");
+                gui.println("ATENÇÃO: O manifesto precisa estar no mesmo local que este programa!");
+            }
+            else {
+                gui.println(path);
+                mods = new JSONObject(FileUtils.readFileToString(modList, StandardCharsets.UTF_8));
+
+                modrinthMods = mods.getJSONArray("modrinth");
+                curseforgeMods = mods.getJSONObject("curseforge");
+                int modsQtd = modrinthMods.length() + curseforgeMods.length();
+                gui.println(modsQtd + " mods no total, pronto para baixar.");
+
+                gui.downloadButton.setEnabled(true);
+                modList.delete();
+            }
+        }
     }
 
-    public Downloader(GUI gui, String path, int sleep) throws IOException {
+    public Downloader(GUI gui, String path, int sleep) throws IOException, URISyntaxException, InterruptedException {
         this(gui, path);
         this.sleep = sleep;
     }
@@ -177,6 +227,16 @@ public class Downloader extends SwingWorker<Integer, String> {
         }
         finally {
             sc.close();;
+        }
+    }
+
+    public void manualManifestDownload() {
+        try {
+            Desktop.getDesktop().browse(new URI("https://pastebin.com/hkf4UbdT"));
+        }
+        catch (Exception e1) {
+            gui.println("erro");
+            e1.printStackTrace();
         }
     }
     
