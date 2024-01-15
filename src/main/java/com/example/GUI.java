@@ -72,11 +72,12 @@ public class GUI {
         console.append(text + "\n");
     }
 
-    public void pathChooser() {
+    public void pathChooser(Downloader downloader) {
         
         if (fileChooser.showOpenDialog(console) == JFileChooser.APPROVE_OPTION) {
             this.path = fileChooser.getSelectedFile().getAbsolutePath();
             this.pathLabel.setText("Caminho da pasta de mods: " + path);
+            downloader.setPath(this.path);
         };
         
     }

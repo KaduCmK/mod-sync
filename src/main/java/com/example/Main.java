@@ -28,7 +28,7 @@ public class Main {
                 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    gui.pathChooser();
+                    gui.pathChooser(downloader);
                 }
             });
 

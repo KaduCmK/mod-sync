@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.net.ssl.SSLHandshakeException;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
@@ -27,6 +26,7 @@ public class Downloader extends SwingWorker<Integer, String> {
     private JSONObject mods;
     private String path;
 
+    private JSONArray remover;
     private JSONArray modrinthMods;
     private JSONObject curseforgeMods;
 
@@ -37,6 +37,7 @@ public class Downloader extends SwingWorker<Integer, String> {
             FileUtils.copyURLToFile(new URL("https://pastebin.com/raw/hkf4UbdT"), modList);
             mods = new JSONObject(FileUtils.readFileToString(modList, StandardCharsets.UTF_8));
 
+            remover = mods.getJSONArray("remove");
             modrinthMods = mods.getJSONArray("modrinth");
             curseforgeMods = mods.getJSONObject("curseforge");
             int modsQtd = modrinthMods.length() + curseforgeMods.length();
@@ -44,7 +45,7 @@ public class Downloader extends SwingWorker<Integer, String> {
 
             modList.delete();
         }
-        catch (SSLHandshakeException ex) {
+        catch (Exception ex) {
             File modList = new File("manifest.json");
             if (!modList.isFile()) {
                 System.out.println("Erro ao baixar o manifesto.\nPressione qualquer tecla para abrir pelo seu navegador e clique em Download\ne rode o programa novamente");
@@ -80,6 +81,7 @@ public class Downloader extends SwingWorker<Integer, String> {
             FileUtils.copyURLToFile(new URL("https://pastebin.com/raw/hkf4UbdT"), modList);
             mods = new JSONObject(FileUtils.readFileToString(modList, StandardCharsets.UTF_8));
 
+            remover = mods.getJSONArray("remove");
             modrinthMods = mods.getJSONArray("modrinth");
             curseforgeMods = mods.getJSONObject("curseforge");
             int modsQtd = modrinthMods.length() + curseforgeMods.length();
@@ -88,7 +90,7 @@ public class Downloader extends SwingWorker<Integer, String> {
             gui.downloadButton.setEnabled(true);
             modList.delete();
         }
-        catch (SSLHandshakeException ex) {
+        catch (Exception ex) {
             File modList = new File("manifest.json");
             if (!modList.isFile()) {
                 gui.println("Erro ao baixar o manifesto.\nUse o botão abaixo para acessar manualmente e clique em Download, e rode o programa novamente");
@@ -118,6 +120,22 @@ public class Downloader extends SwingWorker<Integer, String> {
     protected Integer doInBackground() {
         
         try {
+            // limpando mods
+            for (Object mod: remover) {
+                String modname = (String) mod;
+                File modfile = new File(path + File.separator + modname);
+                if (modfile.exists()) {
+                    if (modfile.delete()) {
+                        publish("Removendo " + modname + "...");
+                    }
+                    else {
+                        publish("ERRO - certifique-se de que o jogo está fechado antes de continuar");
+                        return 42;
+                    }
+                }
+
+            }
+
             // baixando do modrinth
             for (Object mod: modrinthMods) {
                 String url = (String) mod;
@@ -127,7 +145,7 @@ public class Downloader extends SwingWorker<Integer, String> {
                  Thread.sleep(sleep);   
                 }
                 else {
-                    File modfile = new File(path + "\\" + name);
+                    File modfile = new File(path + File.separator + name);
                     if (modfile.isFile()) {
                         gui.println(name + " já existe");
                     }
@@ -147,7 +165,7 @@ public class Downloader extends SwingWorker<Integer, String> {
                  Thread.sleep(sleep);   
                 }
                 else {
-                    File modfile = new File(path + "\\" + name);
+                    File modfile = new File(path + File.separator + name);
                     if (modfile.isFile()) {
                         gui.println(name + " já existe");
                     }
@@ -238,6 +256,10 @@ public class Downloader extends SwingWorker<Integer, String> {
             gui.println("erro");
             e1.printStackTrace();
         }
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
     
 }
